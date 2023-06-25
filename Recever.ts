@@ -3,9 +3,6 @@ import { Script } from 'prisma/script'
 
 import * as config from './env'
 export class Recever {
-    private connection: Connection
-    private channel: Channel
-    private exchange:string ="logs"
     private script= new Script
     private url:string ="amqp://localhost:5672/"
     
@@ -44,6 +41,7 @@ export class Recever {
         throw new Error(`AMQP ERROR: ${error}`)
       }
     }
+    
     public async getData( url:string):Promise<any> {
       try {
         let connection: Connection=await connect( url)
@@ -58,6 +56,7 @@ export class Recever {
             let message=msg.content
             let mqttServer= this.script.getMqttServer(deviceAddress)
             channel.ack(msg)
+              // the parameters of sendData function must be checked 
             this.sendData(1,deviceAddress,msg.properties.headers["devEUI"],msg.properties.headers["appEUI"],1,"z",message,"amqp://"+await connect("amqp://"+(await mqttServer)["username"]+":"+(await mqttServer)["password"]+"@"+(await mqttServer)["host"]))
           })
            
